@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NomadIQ</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Discover places your way</string>
+    <string name="onboarding_desc_1">Personalized recommendations based on your travel experience and preferences</string>
+
+    <string name="onboarding_title_2">First-Timer Mode</string>
+    <string name="onboarding_desc_2">See the complete experience with must-visit locations</string>
+
+    <string name="onboarding_title_3">Advanced Mode</string>
+    <string name="onboarding_desc_3">Discover hidden gems, local secrets and authentic local experiences</string>
+
+    <string name="onboarding_title_4">Switch anytime</string>
+    <string name="onboarding_desc_4">Change your mode anytime to explore different sides</string>
+
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="get_started">Get Started</string>
+
+    <!-- Login -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="email_address">Email address</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="or_continue_with">or continue with</string>
+    <string name="google">Google</string>
+    <string name="apple">Apple</string>
+    <string name="dont_have_account">Don\'t have account? Sign up</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_visited">Visited</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Map Screen -->
+    <string name="first_timer">First-Timer</string>
+    <string name="advanced">Advanced</string>
+    <string name="search_for_places">Search for places</string>
+    <string name="all">All</string>
+    <string name="must_see">Must-See</string>
+    <string name="local_secrets">Local Secrets</string>
+    <string name="student_friendly">Student Friendly</string>
+
+    <!-- Place Details -->
+    <string name="opening_hours">Opening Hours</string>
+    <string name="address">Address</string>
+    <string name="recent_reviews">Recent Reviews</string>
+    <string name="write_a_review">Write a review</string>
+    <string name="send">Send</string>
+    <string name="build_route">Build Route</string>
+    <string name="reviews">reviews</string>
+
+    <!-- Visited Places -->
+    <string name="visited_places">Visited Places</string>
+    <string name="no_visited_places">You haven\'t visited any places yet</string>
+    <string name="start_exploring">Start exploring to add places here</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="experience_mode">Experience Mode</string>
+    <string name="experience_desc_first_timer">Showing you the most famous and essential places to visit</string>
+    <string name="experience_desc_advanced">Showing you hidden gems, local spots, and unique experiences</string>
+    <string name="language">Language</string>
+    <string name="about_nomadiq">About NomadIQ</string>
+    <string name="send_feedback">Send Feedback</string>
+    <string name="log_out">Log Out</string>
+
+    <!-- About Dialog -->
+    <string name="about_title">About NomadIQ</string>
+    <string name="about_description">NomadIQ is your intelligent travel companion that adapts to your experience level. Whether you\'re a first-time visitor or an experienced explorer, we help you discover the perfect places tailored to your journey.</string>
+    <string name="close">Close</string>
+
+    <!-- Common -->
+    <string name="km">km</string>
+    <string name="error_occurred">An error occurred</string>
+    <string name="loading">Loading…</string>
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+</resources>

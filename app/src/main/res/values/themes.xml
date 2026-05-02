@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Base.Theme.NomadIQ" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.NomadIQ" parent="Base.Theme.NomadIQ" />
+
+    <style name="RoundedSquare" parent="">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="BottomNavText">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+
+</resources>

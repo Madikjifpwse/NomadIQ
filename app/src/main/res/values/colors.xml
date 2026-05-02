@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#5DADE2</color>
+    <color name="colorPrimaryDark">#3498DB</color>
+    <color name="colorAccent">#5DADE2</color>
+
+    <color name="backgroundColor">#F8F9FA</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="textPrimary">#212529</color>
+    <color name="textSecondary">#6C757D</color>
+    <color name="textHint">#ADB5BD</color>
+
+    <color name="categoryMustSee">#FF6B6B</color>
+    <color name="categoryStudentFriendly">#4ECDC4</color>
+    <color name="categoryLocalSecrets">#FFD93D</color>
+    <color name="categoryAll">#95E1D3</color>
+
+    <color name="success">#51CF66</color>
+    <color name="warning">#FFA94D</color>
+    <color name="error">#FF6B6B</color>
+
+    <color name="overlay">#80000000</color>
+
+    <color name="ratingYellow">#FFC107</color>
+
+    <color name="figmaBlue">#4A90E2</color>
+    <color name="figmaGrey">#888888</color>
+    <color name="unselectedGrey">#EEEEEE</color>
+</resources>

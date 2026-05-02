@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Background Circle -->
+    <path
+        android:fillColor="@color/white"
+        android:pathData="M60,60m-55,0a55,55 0,1 1,110 0a55,55 0,1 1,-110 0" />
+
+    <!-- Letter "I" -->
+    <path
+        android:fillColor="@color/colorPrimary"
+        android:pathData="M40,30h10v60h-10z" />
+
+    <!-- Letter "Q" with location pin inside -->
+    <path
+        android:fillColor="@color/colorPrimary"
+        android:pathData="M75,30 Q95,30 95,50 Q95,65 85,75 L90,85 L82,85 L77,75 Q65,70 65,50 Q65,30 75,30 M75,40 Q70,40 70,50 Q70,60 75,60 Q80,60 80,50 Q80,40 75,40" />
+
+    <!-- Location Pin inside Q -->
+    <path
+        android:fillColor="@color/colorAccent"
+        android:pathData="M75,45 Q78,45 78,48 Q78,51 75,54 Q72,51 72,48 Q72,45 75,45 M75,47 Q74,47 74,48 Q74,49 75,50 Q76,49 76,48 Q76,47 75,47" />
+</vector>
