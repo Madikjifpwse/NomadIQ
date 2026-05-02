@@ -1,9 +1,7 @@
 package com.nomadiq.app.network;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -13,16 +11,8 @@ public class ApiClient {
 
     public static Retrofit getClient(Context context) {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    // Берем токен из тех же преференсов, куда сохраняли при логине
-                    SharedPreferences prefs = context.getSharedPreferences("NomadIQ_Prefs", Context.MODE_PRIVATE);
-                    String token = prefs.getString("auth_token", "");
-
-                    Request newRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", "Bearer " + token)
-                            .build();
-                    return chain.proceed(newRequest);
-                }).build();
+                .addInterceptor(new AuthInterceptor(context))
+                .build();
 
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()

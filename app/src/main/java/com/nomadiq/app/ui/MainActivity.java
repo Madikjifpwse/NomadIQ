@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.nomadiq.app.adapters.PlacesAdapter;
 import com.nomadiq.app.adapters.VisitedPlacesAdapter;
 import com.nomadiq.app.models.Place;
 import com.nomadiq.app.models.PlaceListResponse;
+import com.nomadiq.app.models.VisitedPlaceItem;
 import com.nomadiq.app.network.ApiClient;
 import com.nomadiq.app.network.ApiService;
 
@@ -53,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private View topPanel, profileContainer, zoomCard;
     private RecyclerView placesListRecycler;
 
+    // ДОБАВЛЕННЫЕ ПОЛЯ КЛАССА
+    private RecyclerView visitedRecyclerView;
+    private VisitedPlacesAdapter visitedPlacesAdapter;
+    private TextView visitedEmptyText;
+
     private List<Place> allLoadedPlaces = new ArrayList<>();
     private String currentMode = "first_timer";
     private String currentCategoryFilter = "All";
@@ -76,10 +83,17 @@ public class MainActivity extends AppCompatActivity {
         map = findViewById(R.id.map);
         topPanel = findViewById(R.id.topPanel);
         placesListRecycler = findViewById(R.id.placesListRecycler);
+
+        visitedRecyclerView = findViewById(R.id.placesListRecycler);
+        visitedEmptyText = findViewById(R.id.visitedEmptyText);
+
         profileContainer = findViewById(R.id.profileContainer);
         zoomCard = findViewById(R.id.zoomCard);
 
         placesListRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        visitedPlacesAdapter = new VisitedPlacesAdapter(new ArrayList<>(), this::openPlaceDetail);
+
         apiService = ApiClient.getClient(this).create(ApiService.class);
 
         setupMap();
@@ -102,31 +116,58 @@ public class MainActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         BottomNavigationView nav = findViewById(R.id.bottomNavigation);
         nav.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-
-            // Сбрасываем видимость
-            map.setVisibility(View.GONE);
-            topPanel.setVisibility(View.GONE);
-            zoomCard.setVisibility(View.GONE);
-            placesListRecycler.setVisibility(View.GONE);
-            profileContainer.setVisibility(View.GONE);
-
-            if (id == R.id.nav_home) {
-                map.setVisibility(View.VISIBLE);
-                topPanel.setVisibility(View.VISIBLE);
-                zoomCard.setVisibility(View.VISIBLE);
-                displayPlacesOnMap();
-            } else if (id == R.id.nav_search) {
-                placesListRecycler.setVisibility(View.VISIBLE);
-                loadPlaces(currentMode);
-            } else if (id == R.id.nav_favorites) {
-                placesListRecycler.setVisibility(View.VISIBLE);
-                loadVisitedPlaces(); // Загружаем "Locations"
-            } else if (id == R.id.nav_profile) {
-                profileContainer.setVisibility(View.VISIBLE);
-            }
+            showScreen(item.getItemId(), true);
             return true;
         });
+        nav.setOnItemReselectedListener(item -> showScreen(item.getItemId(), true));
+    }
+
+    private void showScreen(int navItemId, boolean reloadData) {
+        hideAllScreens();
+
+        if (navItemId == R.id.nav_home) {
+            map.setVisibility(View.VISIBLE);
+            topPanel.setVisibility(View.VISIBLE);
+            zoomCard.setVisibility(View.VISIBLE);
+            map.bringToFront();
+            topPanel.bringToFront();
+            zoomCard.bringToFront();
+            displayPlacesOnMap();
+            return;
+        }
+
+        if (navItemId == R.id.nav_search) {
+            placesListRecycler.setVisibility(View.VISIBLE);
+            placesListRecycler.bringToFront();
+            visitedEmptyText.setVisibility(View.GONE);
+            if (reloadData) {
+                loadPlaces(currentMode);
+            }
+            return;
+        }
+
+        if (navItemId == R.id.nav_favorites) {
+            placesListRecycler.bringToFront();
+            visitedEmptyText.bringToFront();
+            if (reloadData) {
+                loadVisitedPlaces();
+            }
+            return;
+        }
+
+        if (navItemId == R.id.nav_profile) {
+            profileContainer.setVisibility(View.VISIBLE);
+            profileContainer.bringToFront();
+        }
+    }
+
+    private void hideAllScreens() {
+        map.setVisibility(View.GONE);
+        topPanel.setVisibility(View.GONE);
+        zoomCard.setVisibility(View.GONE);
+        placesListRecycler.setVisibility(View.GONE);
+        visitedEmptyText.setVisibility(View.GONE);
+        profileContainer.setVisibility(View.GONE);
     }
 
     private void openPlaceDetail(Place place) {
@@ -138,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("place_rating", place.getRating());
         intent.putExtra("place_category", place.getCategory());
         intent.putExtra("place_address", place.getAddress());
+        intent.putExtra("place_is_visited", place.isVisited());
         startActivity(intent);
     }
 
@@ -146,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlaceListResponse> call, Response<PlaceListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    // Исправлено: используем getVisitedItems или корректный метод из твоей модели
                     allLoadedPlaces = response.body().getPlaces();
                     if (map.getVisibility() == View.VISIBLE) displayPlacesOnMap();
                     else setupPlacesList(allLoadedPlaces);
@@ -162,17 +205,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PlaceListResponse> call, Response<PlaceListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Используем отдельный адаптер для посещенных мест
-                    VisitedPlacesAdapter adapter = new VisitedPlacesAdapter(
-                            response.body().getPlaces(),
-                            place -> openPlaceDetail(place)
-                    );
-                    placesListRecycler.setAdapter(adapter);
+                    List<VisitedPlaceItem> items = response.body().getVisitedItems();
+                    List<Place> placesOnly = new ArrayList<>();
+
+                    if (items != null) {
+                        for (VisitedPlaceItem item : items) {
+                            if (item.getPlace() != null) {
+                                placesOnly.add(item.getPlace());
+                            }
+                        }
+                    }
+
+                    if (placesOnly.isEmpty()) {
+                        visitedPlacesAdapter.setPlaces(new ArrayList<>()); // Чистим адаптер
+                        visitedEmptyText.setVisibility(View.VISIBLE);
+                        visitedRecyclerView.setVisibility(View.GONE);
+                    } else {
+                        visitedEmptyText.setVisibility(View.GONE);
+                        visitedRecyclerView.setVisibility(View.VISIBLE);
+                        visitedPlacesAdapter.setPlaces(placesOnly);
+                    }
                 }
             }
+
             @Override
             public void onFailure(Call<PlaceListResponse> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "History load failed", Toast.LENGTH_SHORT).show();
+                Log.e("API_ERROR", "Error: " + t.getMessage());
+                Toast.makeText(MainActivity.this, "Failed to load visited places", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -279,6 +338,13 @@ public class MainActivity extends AppCompatActivity {
         return "all";
     }
 
-    @Override public void onResume() { super.onResume(); if (map != null) map.onResume(); }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavigationView nav = findViewById(R.id.bottomNavigation);
+        if (nav.getSelectedItemId() == R.id.nav_favorites) {
+            loadVisitedPlaces();
+        }
+    }
     @Override public void onPause() { super.onPause(); if (map != null) map.onPause(); }
 }

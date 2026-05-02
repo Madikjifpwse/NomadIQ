@@ -30,5 +30,8 @@ public interface ApiService {
 
     @POST("api/v1/visited")
     Call<ResponseBody> markAsVisited(@Body VisitedRequest request);
+
+    @DELETE("/api/v1/visited/{place_id}")
+    Call<Void> removeFromVisited(@Path("place_id") String placeId);
 }
 

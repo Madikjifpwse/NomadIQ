@@ -49,6 +49,18 @@
         android:layout_below="@id/topPanel" android:layout_above="@id/bottomMenuWrapper"
         android:background="@color/white" android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/visitedEmptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/topPanel"
+        android:layout_above="@id/bottomMenuWrapper"
+        android:text="You haven't visited any places yet"
+        android:textColor="#888888"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/profileContainer"
         android:layout_width="match_parent" android:layout_height="match_parent"

@@ -23,6 +23,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private ApiService apiService;
     private String placeId;
+    private Button btnVisited;
+    private boolean isCurrentlyVisited;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,44 +42,77 @@ public class PlaceDetailActivity extends AppCompatActivity {
         apiService = ApiClient.getClient(this).create(ApiService.class);
 
         placeId = getIntent().getStringExtra("place_id");
+        String placeName = getIntent().getStringExtra("place_name");
+        String placeDescription = getIntent().getStringExtra("place_description");
+        String placeAddress = getIntent().getStringExtra("place_address");
+        double placeRating = getIntent().getDoubleExtra("place_rating", 0.0);
 
-        String name = getIntent().getStringExtra("place_name");
-        String desc = getIntent().getStringExtra("place_description");
-        String addr = getIntent().getStringExtra("place_address");
-        double rating = getIntent().getDoubleExtra("place_rating", 0.0);
+        isCurrentlyVisited = getIntent().getBooleanExtra("place_is_visited", false);
 
-        ((TextView) findViewById(R.id.detailName)).setText(name);
-        ((TextView) findViewById(R.id.detailDescription)).setText(desc);
-        ((TextView) findViewById(R.id.detailAddress)).setText(addr != null ? addr : "Address unavailable");
-        ((TextView) findViewById(R.id.detailRating)).setText(String.valueOf(rating));
+        ((TextView) findViewById(R.id.detailName)).setText(placeName);
+        ((TextView) findViewById(R.id.detailDescription)).setText(placeDescription);
+        ((TextView) findViewById(R.id.detailAddress)).setText(placeAddress != null ? placeAddress : "Address unavailable");
+        ((TextView) findViewById(R.id.detailRating)).setText(String.valueOf(placeRating));
 
-        Button btnVisited = findViewById(R.id.btnMarkVisited);
-        btnVisited.setOnClickListener(v -> markVisited(btnVisited));
+        btnVisited = findViewById(R.id.btnMarkVisited);
+
+        updateButtonUI();
+
+        btnVisited.setOnClickListener(v -> {
+            if (isCurrentlyVisited) {
+                removeFromVisited(placeId);
+            } else {
+                markVisited(placeId);
+            }
+        });
     }
 
-    private void markVisited(Button btn) {
-        if (placeId == null || placeId.isEmpty()) {
-            Toast.makeText(this, "Error: Invalid Place ID", Toast.LENGTH_SHORT).show();
-            return;
+    private void updateButtonUI() {
+        if (isCurrentlyVisited) {
+            btnVisited.setText("Visited (Tap to remove)");
+            btnVisited.setBackgroundColor(Color.GRAY);
+        } else {
+            btnVisited.setText("I've been here");
+            btnVisited.setBackgroundColor(Color.parseColor("#6200EE"));
         }
+        btnVisited.setEnabled(true);
+    }
+
+    private void markVisited(String placeId) {
+        if (placeId == null || placeId.isEmpty()) return;
 
         apiService.markAsVisited(new VisitedRequest(placeId)).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() || response.code() == 400) {
+                    isCurrentlyVisited = true;
+                    updateButtonUI();
                     Toast.makeText(PlaceDetailActivity.this, "Added to visited!", Toast.LENGTH_SHORT).show();
-                    btn.setText("Visited");
-                    btn.setEnabled(false);
-                    btn.setBackgroundColor(Color.GRAY);
-                } else if (response.code() == 403) {
-                    Toast.makeText(PlaceDetailActivity.this, "Session expired. Please login again.", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(PlaceDetailActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(PlaceDetailActivity.this, "Network error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void removeFromVisited(String placeId) {
+        apiService.removeFromVisited(placeId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    isCurrentlyVisited = false;
+                    updateButtonUI();
+                    Toast.makeText(PlaceDetailActivity.this, "Removed from visited", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(PlaceDetailActivity.this, "Error removing: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(PlaceDetailActivity.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });

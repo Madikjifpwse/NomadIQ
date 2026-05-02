@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/placeCard"
@@ -15,7 +16,7 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        android:descendantFocusability="blocksDescendants"
+        app:rippleColor="?attr/colorControlHighlight"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,15 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp"
-            android:clickable="false">
+            android:padding="12dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/placeImage"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:scaleType="centerCrop"
-                android:clickable="false"
                 app:shapeAppearanceOverlay="@style/RoundedSquare"
                 android:src="@android:drawable/ic_menu_gallery" />
 
@@ -41,15 +40,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:orientation="vertical"
-                android:clickable="false">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:clickable="false">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/placeName"
@@ -61,8 +58,7 @@
                         android:text="Place Name"
                         android:textColor="#1A1A1A"
                         android:textSize="17sp"
-                        android:textStyle="bold"
-                        android:clickable="false" />
+                        android:textStyle="bold" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
@@ -70,8 +66,7 @@
                         android:layout_marginStart="8dp"
                         app:cardBackgroundColor="#F0F7FF"
                         app:cardCornerRadius="6dp"
-                        app:cardElevation="0dp"
-                        android:clickable="false">
+                        app:cardElevation="0dp">
 
                         <TextView
                             android:id="@+id/placeTag"
@@ -93,16 +88,14 @@
                     android:layout_marginTop="4dp"
                     android:text="Almaty, Abay Ave 10"
                     android:textColor="#666666"
-                    android:textSize="13sp"
-                    android:clickable="false" />
+                    android:textSize="13sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:clickable="false">
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="14dp"
@@ -118,8 +111,7 @@
                         android:text="4.8"
                         android:textColor="#1A1A1A"
                         android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:clickable="false" />
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

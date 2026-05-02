@@ -4,18 +4,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.google.android.material.card.MaterialCardView;
 import com.nomadiq.app.R;
 import com.nomadiq.app.models.Place;
-
 import java.util.List;
 
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder> {
-    private List<Place> places;
-    private OnPlaceClickListener listener;
+    // Изменил на protected и убрал final, чтобы наследники могли менять список
+    protected List<Place> places;
+    private final OnPlaceClickListener listener;
 
     public interface OnPlaceClickListener {
         void onPlaceClick(Place place);
@@ -24,6 +23,11 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
     public PlacesAdapter(List<Place> places, OnPlaceClickListener listener) {
         this.places = places;
         this.listener = listener;
+    }
+
+    public void setPlaces(List<Place> newPlaces) {
+        this.places = newPlaces;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -40,9 +44,10 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
         holder.rating.setText(String.valueOf(place.getRating()));
         holder.tag.setText(place.getCategory());
 
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onPlaceClick(place);
+        holder.placeCard.setOnClickListener(v -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (listener != null && adapterPosition != RecyclerView.NO_POSITION) {
+                listener.onPlaceClick(places.get(adapterPosition));
             }
         });
     }
@@ -53,10 +58,12 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name, rating, tag;
+        public MaterialCardView placeCard;
+        public TextView name, rating, tag;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            placeCard = itemView.findViewById(R.id.placeCard);
             name = itemView.findViewById(R.id.placeName);
             rating = itemView.findViewById(R.id.placeRating);
             tag = itemView.findViewById(R.id.placeTag);
