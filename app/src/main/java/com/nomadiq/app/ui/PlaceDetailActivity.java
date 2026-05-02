@@ -105,6 +105,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     isCurrentlyVisited = false;
                     updateButtonUI();
+                    setResult(RESULT_OK);
                     Toast.makeText(PlaceDetailActivity.this, "Removed from visited", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(PlaceDetailActivity.this, "Error removing: " + response.code(), Toast.LENGTH_SHORT).show();

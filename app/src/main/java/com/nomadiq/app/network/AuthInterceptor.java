@@ -1,6 +1,7 @@
 package com.nomadiq.app.network;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AuthInterceptor implements Interceptor {
+    private static final String AUTH_PREFS = "auth_prefs";
+    private static final String ACCESS_TOKEN_KEY = "access_token";
     private final Context appContext;
 
     public AuthInterceptor(Context context) {
@@ -28,8 +31,8 @@ public class AuthInterceptor implements Interceptor {
             return chain.proceed(originalRequest);
         }
 
-        SharedPreferences prefs = appContext.getSharedPreferences("NomadIQ_Prefs", Context.MODE_PRIVATE);
-        String token = prefs.getString("auth_token", "");
+        SharedPreferences prefs = appContext.getSharedPreferences(AUTH_PREFS, Context.MODE_PRIVATE);
+        String token = prefs.getString(ACCESS_TOKEN_KEY, "");
 
         Request.Builder requestBuilder = originalRequest.newBuilder();
 
@@ -37,6 +40,20 @@ public class AuthInterceptor implements Interceptor {
             requestBuilder.addHeader("Authorization", "Bearer " + token);
         }
 
-        return chain.proceed(requestBuilder.build());
+        Response response = chain.proceed(requestBuilder.build());
+        if (response.code() == 401) {
+            handleUnauthorized();
+        }
+
+        return response;
+    }
+
+    private void handleUnauthorized() {
+        SharedPreferences prefs = appContext.getSharedPreferences(AUTH_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().remove(ACCESS_TOKEN_KEY).apply();
+
+        Intent loginIntent = new Intent(appContext, com.nomadiq.app.ui.LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        appContext.startActivity(loginIntent);
     }
 }

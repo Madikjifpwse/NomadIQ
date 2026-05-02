@@ -21,6 +21,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String AUTH_PREFS = "auth_prefs";
+    private static final String ACCESS_TOKEN_KEY = "access_token";
 
     private TextInputEditText etUsername, etPassword;
     private Button btnLogin;
@@ -30,6 +32,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (hasSavedToken()) {
+            startMainScreen();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         etUsername = findViewById(R.id.etUsername);
@@ -66,8 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     Toast.makeText(LoginActivity.this, "The entrance is completed!", Toast.LENGTH_SHORT).show();
 
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
+                    startMainScreen();
                 } else {
                     Toast.makeText(LoginActivity.this, "Error: invalid username or password", Toast.LENGTH_SHORT).show();
                 }
@@ -81,7 +88,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveToken(String token) {
-        SharedPreferences preferences = getSharedPreferences("NomadIQ_Prefs", MODE_PRIVATE);
-        preferences.edit().putString("auth_token", token).apply();
+        SharedPreferences preferences = getSharedPreferences(AUTH_PREFS, MODE_PRIVATE);
+        preferences.edit().putString(ACCESS_TOKEN_KEY, token).apply();
+    }
+
+    private boolean hasSavedToken() {
+        SharedPreferences preferences = getSharedPreferences(AUTH_PREFS, MODE_PRIVATE);
+        String token = preferences.getString(ACCESS_TOKEN_KEY, null);
+        return token != null && !token.isEmpty();
+    }
+
+    private void startMainScreen() {
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        finish();
     }
 }
