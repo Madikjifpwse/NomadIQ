@@ -20,7 +20,6 @@ public interface ApiService {
     @POST("api/v1/auth/register")
     Call<UserResponse> register(@Body UserRegisterRequest request);
 
-    // ПОЛУЧЕНИЕ ДАННЫХ ТЕКУЩЕГО ЮЗЕРА (Имя, Почта, Уровень)
     @GET("api/v1/users/me")
     Call<UserResponse> getCurrentUser();
 

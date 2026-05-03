@@ -3,16 +3,18 @@ package com.nomadiq.app.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView; // Добавили импорт
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide; // Добавили импорт Glide
 import com.google.android.material.card.MaterialCardView;
 import com.nomadiq.app.R;
 import com.nomadiq.app.models.Place;
 import java.util.List;
 
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder> {
-    // Изменил на protected и убрал final, чтобы наследники могли менять список
     protected List<Place> places;
     private final OnPlaceClickListener listener;
 
@@ -44,6 +46,17 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
         holder.rating.setText(String.valueOf(place.getRating()));
         holder.tag.setText(place.getCategory());
 
+        if (place.getImageUrl() != null && !place.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(place.getImageUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_placeholder_mountain)
+                    .error(R.drawable.ic_placeholder_mountain)
+                    .into(holder.placeImage);
+        } else {
+            holder.placeImage.setImageResource(R.drawable.ic_placeholder_mountain);
+        }
+
         holder.placeCard.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
             if (listener != null && adapterPosition != RecyclerView.NO_POSITION) {
@@ -60,6 +73,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public MaterialCardView placeCard;
         public TextView name, rating, tag;
+        public ImageView placeImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -67,6 +81,7 @@ public class PlacesAdapter extends RecyclerView.Adapter<PlacesAdapter.ViewHolder
             name = itemView.findViewById(R.id.placeName);
             rating = itemView.findViewById(R.id.placeRating);
             tag = itemView.findViewById(R.id.placeTag);
+            placeImage = itemView.findViewById(R.id.placeImage);
         }
     }
 }

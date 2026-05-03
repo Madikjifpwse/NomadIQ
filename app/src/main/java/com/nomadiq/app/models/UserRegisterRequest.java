@@ -13,7 +13,7 @@ public class UserRegisterRequest {
     private String password;
 
     @SerializedName("experience_level")
-    private String experienceLevel; // "first_timer" или "advanced"
+    private String experienceLevel;
 
     public UserRegisterRequest(String username, String email, String password, String experienceLevel) {
         this.username = username;

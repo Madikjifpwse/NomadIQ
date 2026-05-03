@@ -3,7 +3,7 @@ package com.nomadiq.app.models;
 import com.google.gson.annotations.SerializedName;
 
 public class UserLoginRequest {
-    @SerializedName("username") // Должно совпадать с полем в Python
+    @SerializedName("username")
     private String username;
 
     @SerializedName("password")

@@ -11,6 +11,12 @@ public class Place {
     private String category;
     private String place_type;
     private String address;
+    @SerializedName("image_url")
+    private String image_url;
+
+    public String getImageUrl() {
+        return image_url;
+    }
 
     @SerializedName("rating")
     private double rating;

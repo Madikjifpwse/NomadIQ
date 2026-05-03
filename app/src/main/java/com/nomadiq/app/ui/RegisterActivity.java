@@ -30,13 +30,11 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Инициализируем UI
         etUsername = findViewById(R.id.etRegUsername);
         etEmail = findViewById(R.id.etRegEmail);
         etPassword = findViewById(R.id.etRegPassword);
         btnRegister = findViewById(R.id.btnRegister);
 
-        // Инициализируем Retrofit
         apiService = ApiClient.getClient(this).create(ApiService.class);
 
         btnRegister.setOnClickListener(v -> {
@@ -49,18 +47,15 @@ public class RegisterActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        // Простая валидация
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
         TextView tvLoginLink = findViewById(R.id.tvLoginLink);
         tvLoginLink.setOnClickListener(v -> {
-            // Переходим на экран логина
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
         });
-        // По ТЗ ставим "first_timer" по умолчанию при регистрации
         UserRegisterRequest request = new UserRegisterRequest(username, email, password, "first_timer");
 
         apiService.register(request).enqueue(new Callback<UserResponse>() {
@@ -68,7 +63,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(RegisterActivity.this, "Registration Successful!", Toast.LENGTH_LONG).show();
-                    // После успеха идем на логин
                     startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                     finish();
                 } else {

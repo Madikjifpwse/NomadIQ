@@ -151,14 +151,19 @@
                 app:iconGravity="textStart" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnGoogleMaps"
+                android:id="@+id/btnViewOnGoogleMaps"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="8dp"
                 android:text="View on Google Maps"
                 android:textAllCaps="false"
-                app:cornerRadius="12dp" />
+                android:textSize="16sp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_location"
+                app:iconGravity="textStart"
+                app:strokeColor="#4A90E2"
+                app:strokeWidth="1dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

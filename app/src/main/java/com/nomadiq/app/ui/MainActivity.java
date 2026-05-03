@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadProfileStats() {
-        // 1. Сначала загружаем данные пользователя (Имя, Почта)
         apiService.getCurrentUser().enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
@@ -191,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                         applyExperienceModeUi(currentMode);
                     }
                 }
-                // 2. Затем загружаем статистику
                 fetchStatsOnly();
             }
 
@@ -290,6 +288,9 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("place_category", place.getCategory());
         intent.putExtra("place_address", place.getAddress());
         intent.putExtra("place_is_visited", place.isVisited());
+        intent.putExtra("place_latitude", place.getLatitude());
+        intent.putExtra("place_longitude", place.getLongitude());
+        intent.putExtra("place_image_url", place.getImageUrl());
         startActivity(intent);
     }
 
@@ -342,17 +343,25 @@ public class MainActivity extends AppCompatActivity {
     private void setupCategoryRecycler() {
         RecyclerView cr = findViewById(R.id.categoryRecycler);
         cr.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        cr.setAdapter(new CategoryAdapter(Arrays.asList("All", "Must-See", "Local Secrets", "Student Friendly"), cat -> {
-            currentCategoryFilter = cat; displayPlacesOnMap();
+
+        List<String> placeTypes = Arrays.asList("All", "Park", "Cafe", "Museum", "Shopping", "Restaurant");
+
+        cr.setAdapter(new CategoryAdapter(placeTypes, type -> {
+            currentCategoryFilter = type;
+            displayPlacesOnMap();
         }));
     }
 
     private void displayPlacesOnMap() {
         if (map == null) return;
         map.getOverlays().clear();
-        String dbKey = getDbKeyForCategory(currentCategoryFilter);
+
         for (Place place : allLoadedPlaces) {
-            if (currentCategoryFilter.equals("All") || place.getCategory().equalsIgnoreCase(dbKey)) {
+            boolean matchesFilter = currentCategoryFilter.equals("All") ||
+                    (place.getPlaceType() != null &&
+                            place.getPlaceType().equalsIgnoreCase(currentCategoryFilter));
+
+            if (matchesFilter) {
                 addMarkerToMap(place);
             }
         }
@@ -374,21 +383,42 @@ public class MainActivity extends AppCompatActivity {
     private Drawable createCustomMarker(Place place) {
         int color;
         int iconResId;
+
         String cat = (place.getCategory() != null) ? place.getCategory().toLowerCase() : "";
         switch (cat) {
-            case "must_see": color = Color.parseColor("#FF6B6B"); break;
-            case "local_secret": color = Color.parseColor("#6BCB77"); break;
-            case "student_friendly": color = Color.parseColor("#FFD93D"); break;
-            default: color = Color.parseColor("#4A90E2"); break;
+            case "must_see":
+                color = Color.parseColor("#FF6B6B");
+                break;
+            case "local_secret":
+                color = Color.parseColor("#6BCB77");
+                break;
+            case "student_friendly":
+                color = Color.parseColor("#FFD93D");
+                break;
+            default:
+                color = Color.parseColor("#4A90E2");
+                break;
         }
 
         String type = (place.getPlaceType() != null) ? place.getPlaceType().toLowerCase() : "";
-        if (type.contains("park")) iconResId = R.drawable.ic_park;
-        else if (type.contains("cafe")) iconResId = R.drawable.ic_cafe;
-        else iconResId = R.drawable.ic_location;
+
+        if (type.contains("park")) {
+            iconResId = R.drawable.ic_park;
+        } else if (type.contains("cafe")) {
+            iconResId = R.drawable.ic_cafe;
+        } else if (type.contains("restaurant")) {
+            iconResId = R.drawable.ic_restaurant;
+        } else if (type.contains("museum") || type.contains("culture")) {
+            iconResId = R.drawable.ic_museum;
+        } else if (type.contains("shop") || type.contains("mall")) {
+            iconResId = R.drawable.ic_shopping;
+        } else {
+            iconResId = R.drawable.ic_location;
+        }
 
         Bitmap bitmap = Bitmap.createBitmap(110, 110, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
+
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.OVAL);
         shape.setColor(color);
@@ -402,6 +432,7 @@ public class MainActivity extends AppCompatActivity {
             icon.setBounds(25, 25, 85, 85);
             icon.draw(canvas);
         }
+
         return new BitmapDrawable(getResources(), bitmap);
     }
 
